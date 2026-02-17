@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    
+    <display-name>UninaSwap</display-name>
+    
+    <!-- Welcome file -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    
+    <!-- Servlet mappings -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.servlet.LoginServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>com.servlet.RegisterServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>com.servlet.LogoutServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>TestDBConnectionServlet</servlet-name>
+        <servlet-class>com.servlet.TestDBConnectionServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>TestDBConnectionServlet</servlet-name>
+        <url-pattern>/testdb</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>SimpleLoginServlet</servlet-name>
+        <servlet-class>com.servlet.SimpleLoginServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>SimpleLoginServlet</servlet-name>
+        <url-pattern>/simplelogin</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>CreateAdServlet</servlet-name>
+        <servlet-class>com.servlet.CreateAdServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>CreateAdServlet</servlet-name>
+        <url-pattern>/createad</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>MakeOfferServlet</servlet-name>
+        <servlet-class>com.servlet.MakeOfferServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>MakeOfferServlet</servlet-name>
+        <url-pattern>/makeoffer</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>OfferDecisionServlet</servlet-name>
+        <servlet-class>com.servlet.OfferDecisionServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>OfferDecisionServlet</servlet-name>
+        <url-pattern>/offer/decision</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>OfferWithdrawServlet</servlet-name>
+        <servlet-class>com.servlet.OfferWithdrawServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OfferWithdrawServlet</servlet-name>
+        <url-pattern>/offer/withdraw</url-pattern>
+    </servlet-mapping>
+    
+</web-app>
