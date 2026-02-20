@@ -13,10 +13,6 @@ public class DBConnect {
             Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("✅ Driver MySQL caricato con successo");
 
-            // Parametri di connessione (modificare se necessario)
-            // Assumiamo root/root o password vuota.
-            // Spesso in locale è root, oppure root e password vuota.
-            // Provo con root/root.
             String url = "jdbc:mysql://localhost:3306/ecommerce?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
             String user = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
             String password = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "";
