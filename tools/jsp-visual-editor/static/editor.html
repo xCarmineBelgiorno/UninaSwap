@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>JSP Visual Editor</title>
+  <script src="https://unpkg.com/grapesjs"></script>
+  <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet"/>
+  <style>body, html {height:100%; margin:0; font-family: Arial, sans-serif} #gjs{height:100vh}</style>
+</head>
+<body>
+  <div style="width:320px; padding:10px; border-right:1px solid #ddd; position:fixed; left:0; top:0; bottom:0; background:#f7f7f7; overflow:auto;">
+    <h3 style="margin:6px 0">.jsp files</h3>
+    <ul id="files" style="list-style:none; padding:0; margin:0; max-height:45vh; overflow:auto"></ul>
+    <div id="status" style="margin-top:10px; color:green; font-size:13px"></div>
+    <div style="margin-top:10px">
+      <button id="reload">Reload list</button>
+      <button id="assetsBtn" style="margin-left:8px">Reload assets</button>
+      <button id="togglePlaceholders" style="margin-left:8px">Show placeholders</button>
+    </div>
+    <p style="margin-top:14px; font-size:12px; color:#555">Nota: i placeholder JSP sono nascosti nella preview. Usa "Show placeholders" per vederli.</p>
+    <hr/>
+    <div id="assetPreview" style="font-size:13px; color:#333"></div>
+  </div>
+  <div id="gjs" style="margin-left:320px"></div>
+
+<script>
+let editor;
+let currentFile = null;
+let currentMapping = null;
+let lastAssets = { css: [], imgs: [] };
+let lastLoadedRaw = null; // contentRaw returned by server
+let showingPlaceholders = false;
+
+async function fetchAssets() {
+  try {
+    const r = await fetch('/assets/list');
+    const j = await r.json();
+    lastAssets = j || {css:[], imgs:[]};
+    document.getElementById('assetPreview').innerHTML = `<b>CSS:</b> ${lastAssets.css.length} • <b>Images:</b> ${lastAssets.imgs.length}`;
+    return lastAssets;
+  } catch(e) {
+    document.getElementById('assetPreview').textContent = 'Errore assets: ' + e.message;
+    return {css:[], imgs:[]};
+  }
+}
+
+function insertBaseAndCssToIframe(doc, cssArray) {
+  try {
+    if (!doc.head.querySelector('base')) {
+      const base = doc.createElement('base');
+      base.setAttribute('href', '/app/');
+      doc.head.insertBefore(base, doc.head.firstChild);
+    }
+    cssArray.forEach(url => {
+      // evita duplicati
+      const exists = Array.from(doc.head.querySelectorAll('link')).some(l => l.href && l.href.indexOf(url) !== -1);
+      if (!exists) {
+        const link = doc.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        doc.head.appendChild(link);
+      }
+    });
+  } catch(e) {
+    console.warn('insertBaseAndCssToIframe error', e);
+  }
+}
+
+async function initEditorWith(htmlContent) {
+  const assets = await fetchAssets();
+  const canvasCss = assets.css || [];
+  const imgUrls = assets.imgs || [];
+
+  if (editor) editor.destroy();
+
+  editor = grapesjs.init({
+    container: '#gjs',
+    fromElement: false,
+    height: '100%',
+    storageManager: { autoload: false, type: null },
+    canvas: { styles: [] },
+    assetManager: { assets: imgUrls, upload: false }
+  });
+
+  // inietta base + css nell'iframe della canvas
+  const setupCss = () => {
+    const doc = editor.Canvas.getDocument();
+    if (doc && doc.head) insertBaseAndCssToIframe(doc, canvasCss);
+    else setTimeout(setupCss, 150);
+  };
+  setupCss();
+
+  editor.setComponents(htmlContent);
+}
+
+async function listFiles(){
+  const r = await fetch('/list');
+  const j = await r.json();
+  const ul = document.getElementById('files'); ul.innerHTML='';
+  if(j.error) { document.getElementById('status').textContent = 'Errore: '+j.error; return; }
+  if(!j.files || j.files.length===0) {
+    ul.innerHTML = '<li style="color:#777">Nessun .jsp trovato</li>';
+    return;
+  }
+  for(const f of j.files){
+    const li = document.createElement('li');
+    li.style.padding='6px 0';
+    li.innerHTML = `<a href="#" data-file="${f}" style="color:#0066cc; text-decoration:none">${f}</a>`;
+    ul.appendChild(li);
+  }
+  document.querySelectorAll('#files a').forEach(a=>a.addEventListener('click', ev => {
+    ev.preventDefault(); loadFile(ev.target.dataset.file);
+  }));
+  document.getElementById('status').textContent = 'Files loaded: ' + j.files.length;
+}
+
+async function loadFile(fname){
+  currentFile = fname;
+  document.getElementById('status').textContent = 'Loading ' + fname;
+  const r = await fetch('/load?file='+encodeURIComponent(fname));
+  const j = await r.json();
+  if(!j.ok){ alert('Load error: '+(j.error||'unknown')); return; }
+  currentMapping = j.mapping || {};
+  // server returns contentVisual and contentRaw
+  lastLoadedRaw = j.contentRaw || '';
+  const visual = j.contentVisual || j.contentRaw || '';
+  showingPlaceholders = false;
+  await initEditorWith(visual);
+  document.getElementById('status').textContent = 'Loaded ' + fname;
+  addSaveButton();
+}
+
+function addSaveButton(){
+  document.querySelectorAll('.gjs-save-btn').forEach(b=>b.remove());
+  if(!editor) return;
+  const btn = document.createElement('button');
+  btn.className = 'gjs-save-btn';
+  btn.textContent = 'Save (create backup)';
+  btn.style = 'position:fixed; right:10px; top:10px; z-index:9999; padding:8px 12px';
+  btn.onclick = async ()=>{
+    if(!confirm('Save changes back to ' + currentFile + ' ? (backup will be created)')) return;
+    document.getElementById('status').textContent = 'Saving...';
+    // getHtml returns the HTML visible in canvas (which contains <!--__JSP_PLACEHOLDER_x__--> comments)
+    const content = editor.getHtml();
+    const payload = { file: currentFile, content: content, mapping: currentMapping };
+    const r = await fetch('/save', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+    const j = await r.json();
+    if(j.ok) {
+      alert('Saved. Backup: '+(j.backup || 'n/a'));
+      document.getElementById('status').textContent = 'Saved';
+    } else {
+      alert('Save error: '+j.error);
+      document.getElementById('status').textContent = 'Error';
+    }
+  };
+  document.body.appendChild(btn);
+}
+
+// toggle between visual (placeholders hidden) and raw (placeholders shown as text)
+document.getElementById('togglePlaceholders').addEventListener('click', async () => {
+  if (!currentFile) return alert('Apri prima un file');
+  showingPlaceholders = !showingPlaceholders;
+  if (showingPlaceholders) {
+    // show raw version (placeholders as raw tokens)
+    await initEditorWith(lastLoadedRaw || '');
+    document.getElementById('togglePlaceholders').textContent = 'Hide placeholders';
+  } else {
+    // request server's visual again (could reuse last visual but safer to re-fetch)
+    const r = await fetch('/load?file='+encodeURIComponent(currentFile));
+    const j = await r.json();
+    const visual = j.contentVisual || j.contentRaw || '';
+    currentMapping = j.mapping || {};
+    lastLoadedRaw = j.contentRaw || lastLoadedRaw;
+    await initEditorWith(visual);
+    document.getElementById('togglePlaceholders').textContent = 'Show placeholders';
+  }
+});
+
+document.getElementById('reload').addEventListener('click', listFiles);
+document.getElementById('assetsBtn').addEventListener('click', fetchAssets);
+listFiles();
+</script>
+</body>
+</html>
