@@ -274,8 +274,16 @@
                                     </select>
                                 </div>
                                 <div class="filter-group">
+                                    <label for="minPrice">Prezzo Minimo</label>
+                                    <input type="number" id="minPrice" name="minPrice" placeholder="€" min="0"
+                                        value="<%= request.getParameter(" minPrice") !=null ?
+                                        request.getParameter("minPrice") : "" %>">
+                                </div>
+                                <div class="filter-group">
                                     <label for="maxPrice">Prezzo Massimo</label>
-                                    <input type="number" id="maxPrice" name="maxPrice" placeholder="€" min="0">
+                                    <input type="number" id="maxPrice" name="maxPrice" placeholder="€" min="0"
+                                        value="<%= request.getParameter(" maxPrice") !=null ?
+                                        request.getParameter("maxPrice") : "" %>">
                                 </div>
                                 <div class="filter-group">
                                     <button type="submit" class="filter-btn">Filtra</button>
@@ -285,8 +293,15 @@
                     </div>
 
                     <div class="ads-grid">
-                        <% try { com.control.AdControl adControl=new com.control.AdControl(); List<SimpleAd> ads
-                            = adControl.getAllAds();
+                        <% try { com.control.AdControl adControl=new com.control.AdControl(); String
+                            category=request.getParameter("category"); String type=request.getParameter("type"); String
+                            minPriceStr=request.getParameter("minPrice"); String
+                            maxPriceStr=request.getParameter("maxPrice"); java.math.BigDecimal minPrice=null;
+                            java.math.BigDecimal maxPrice=null; if (minPriceStr !=null && !minPriceStr.trim().isEmpty())
+                            { try { minPrice=new java.math.BigDecimal(minPriceStr); } catch (Exception e) {} } if
+                            (maxPriceStr !=null && !maxPriceStr.trim().isEmpty()) { try { maxPrice=new
+                            java.math.BigDecimal(maxPriceStr); } catch (Exception e) {} } List<SimpleAd> ads =
+                            adControl.getAdsByFilters(category, type, minPrice, maxPrice);
 
                             if(ads != null && !ads.isEmpty()) {
                             for(SimpleAd ad : ads) {
