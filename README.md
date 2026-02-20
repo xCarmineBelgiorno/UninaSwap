@@ -49,6 +49,10 @@ Progetto di OO e BDD
 - **JFreeChart** - Grafici e statistiche
 - **Responsive Design** - Compatibilità mobile
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3f4da7f (Update README.md)
 ## 📋 Requisiti di Sistema
 
 - **Java**: JDK 8 o superiore
@@ -111,6 +115,11 @@ mvn package
 - Un'offerta accettata genera una transazione
 - Le transazioni possono avere recensioni
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 3f4da7f (Update README.md)
 ## 📊 Report e Statistiche
 
 ### Grafici Disponibili
@@ -168,6 +177,11 @@ mvn verify
 - `GET /reports/user/{id}` - Statistiche utente
 - `GET /reports/charts` - Dati per grafici
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 3f4da7f (Update README.md)
 ## 🤝 Contribuire
 
 ### Come Contribuire
