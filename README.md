@@ -48,10 +48,6 @@
 - **JFreeChart** - Grafici e statistiche
 - **Responsive Design** - Compatibilità mobile
 
-### Sicurezza
-- **Password Hashing** - SHA-256 con salt
-- **Validazione Input** - Protezione da injection
-- **Session Management** - Gestione sicura delle sessioni
 
 ## 📋 Requisiti di Sistema
 
@@ -64,7 +60,7 @@
 
 ### 1. Clona il Repository
 ```bash
-git clone https://github.com/yourusername/uninaswap.git
+git clone https://github.com/xCarmineBelgiorno/uninaswap.git
 cd uninaswap
 ```
 
@@ -115,22 +111,7 @@ mvn package
 - Un'offerta accettata genera una transazione
 - Le transazioni possono avere recensioni
 
-## 🔐 Sicurezza
 
-### Autenticazione
-- Password hashate con SHA-256 e salt casuale
-- Sessioni gestite lato server
-- Timeout automatico delle sessioni
-
-### Validazione
-- Controllo input lato client e server
-- Sanitizzazione dati prima del database
-- Protezione da SQL injection
-
-### Autorizzazione
-- Controllo accessi basato su ruoli
-- Verifica proprietà per modifiche/eliminazioni
-- Log delle operazioni sensibili
 
 ## 📊 Report e Statistiche
 
@@ -189,25 +170,7 @@ mvn verify
 - `GET /reports/user/{id}` - Statistiche utente
 - `GET /reports/charts` - Dati per grafici
 
-## 🚧 Roadmap
 
-### Versione 1.1
-- [ ] Notifiche push
-- [ ] Chat tra utenti
-- [ ] Sistema di pagamento online
-- [ ] App mobile React Native
-
-### Versione 1.2
-- [ ] Sistema di reputazione avanzato
-- [ ] Integrazione social media
-- [ ] API REST completa
-- [ ] Microservizi
-
-### Versione 2.0
-- [ ] Intelligenza artificiale per matching
-- [ ] Blockchain per transazioni
-- [ ] Multi-lingua
-- [ ] Integrazione università multiple
 
 ## 🤝 Contribuire
 
@@ -242,8 +205,8 @@ Questo progetto è sotto licenza **MIT**. Vedi il file `LICENSE` per i dettagli.
 ## 📞 Supporto
 
 - **Email**: support@uninaswap.it
-- **Issues**: [GitHub Issues](https://github.com/yourusername/uninaswap/issues)
-- **Documentazione**: [Wiki](https://github.com/yourusername/uninaswap/wiki)
+- **Issues**: [GitHub Issues](https://github.com/xCarmineBelgiorno/uninaswap/issues)
+- **Documentazione**: [Wiki](https://github.com/xCarmineBelgiorno/uninaswap/wiki)
 
 ## 🔄 Changelog
 
